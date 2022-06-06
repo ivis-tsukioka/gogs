@@ -15,6 +15,7 @@ import (
 	"github.com/G-Node/gogs/internal/context"
 	"github.com/G-Node/gogs/internal/gitutil"
 	"github.com/G-Node/gogs/internal/tool"
+	logv2 "unknwon.dev/clog/v2"
 )
 
 func serveData(c *context.Context, name string, data []byte) error {
@@ -53,7 +54,20 @@ func ServeBlob(c *context.Context, blob *git.Blob) error {
 }
 
 func SingleDownload(c *context.Context) {
+	logv2.Info("c.Repo.TreePath", c.Repo.TreePath)
 	blob, err := c.Repo.Commit.Blob(c.Repo.TreePath)
+	tree, terr := c.Repo.Commit.TreeEntry(c.Repo.TreePath)
+	if terr != nil {
+		logv2.Error("terr : %v", terr)
+	} else {
+		logv2.Info("tree.IsBlob() : %v", tree.IsBlob())
+		logv2.Info("tree.IsExec() : %v", tree.IsExec())
+		logv2.Info("tree.Mode() : %v", tree.Mode())
+		logv2.Info("tree.Name() : %v", tree.Name())
+		logv2.Info("tree.Type() : %v", tree.Type())
+		logv2.Info("tree.Size() : %v", tree.Size())
+		logv2.Info("tree.Size() : %v", tree.Size())
+	}
 	if err != nil {
 		c.NotFoundOrError(gitutil.NewError(err), "get blob")
 		return
